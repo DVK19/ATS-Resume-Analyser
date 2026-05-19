@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 
 // Configuration
@@ -26,7 +26,14 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ai_res
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://ats-resume-analyser-ten.vercel.app/p'
+  ],
+  credentials: true
+}));
 app.use(express.json({ limit: '50mb' }));
 
 // Database Connection
@@ -77,8 +84,14 @@ const isAdmin = async (req: any, res: any, next: any) => {
 
 // --- Multer Setup ---
 const storage = multer.memoryStorage();
-const upload = multer({ 
+
+const upload = multer({
   storage,
+
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5 MB
+  },
+
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/pdf') {
       cb(null, true);
@@ -91,11 +104,11 @@ const upload = multer({
 // --- API Routes ---
 
 // Auth
-app.get(`${import.meta.env.VITE_API_URL}/api/health`, (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   try {
     const { firebaseId, email, displayName, photoURL } = req.body;
     let user = await User.findOne({ firebaseId });
@@ -124,7 +137,7 @@ app.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, async (req, res) => {
 });
 
 // Resume Analysis
-app.post(`${import.meta.env.VITE_API_URL}/api/analyze`, authenticateToken, upload.single('resume'), async (req: any, res: any) => {
+app.post('/api/analyze', authenticateToken, upload.single('resume'), async (req: any, res: any) => {
   try {
     const { jobDescription } = req.body;
     if (!req.file) return res.status(400).json({ message: 'Resume PDF is required' });
@@ -291,7 +304,7 @@ app.post(`${import.meta.env.VITE_API_URL}/api/analyze`, authenticateToken, uploa
 });
 
 // Dashboard
-app.get(`${import.meta.env.VITE_API_URL}/api/analyses`, authenticateToken, async (req: any, res) => {
+app.get('/api/analyses', authenticateToken, async (req: any, res) => {
   try {
     const analyses = await Analysis.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(analyses);
@@ -300,7 +313,7 @@ app.get(`${import.meta.env.VITE_API_URL}/api/analyses`, authenticateToken, async
   }
 });
 
-app.get(`${import.meta.env.VITE_API_URL}/api/analyses/:id`, authenticateToken, async (req: any, res: any) => {
+app.get('/api/analyses/:id', authenticateToken, async (req: any, res: any) => {
   try {
     const analysis = await Analysis.findOne({ _id: req.params.id, userId: req.user.id });
     if (!analysis) return res.status(404).json({ message: 'Analysis not found' });
@@ -311,7 +324,7 @@ app.get(`${import.meta.env.VITE_API_URL}/api/analyses/:id`, authenticateToken, a
 });
 
 // Admin
-app.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, authenticateToken, isAdmin, async (req, res) => {
+app.get('/api/admin/stats', authenticateToken, isAdmin, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const totalAnalyses = await Analysis.countDocuments();
@@ -329,7 +342,7 @@ app.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, authenticateToken, is
   }
 });
 
-app.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, authenticateToken, isAdmin, async (req, res) => {
+app.get('/api/admin/users', authenticateToken, isAdmin, async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
@@ -338,7 +351,7 @@ app.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, authenticateToken, is
   }
 });
 
-app.delete(`${import.meta.env.VITE_API_URL}/api/admin/users/:id`, authenticateToken, isAdmin, async (req: any, res) => {
+app.delete('/api/admin/users/:id', authenticateToken, isAdmin, async (req: any, res) => {
   try {
     const userId = req.params.id;
 
@@ -373,14 +386,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
   app.use(vite.middlewares);
 } else {
-  app.get(`${import.meta.env.VITE_API_URL}/api/health`, (req, res) => {
-    res.json({
-      status: 'ok',
-      timestamp: new Date().toISOString()
-    });
-  });
-
-  app.get(`${import.meta.env.VITE_API_URL}/`, (req, res) => {
+  app.get('/', (req, res) => {
     res.json({
       status: 'API Running'
     });
@@ -391,4 +397,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-});;
+});
