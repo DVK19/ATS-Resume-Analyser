@@ -30,7 +30,7 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://ats-resume-analyser-ten.vercel.app/p'
+    'https://ats-resume-analyser-ten.vercel.app'
   ],
   credentials: true
 }));
