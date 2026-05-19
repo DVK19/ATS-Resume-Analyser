@@ -373,12 +373,21 @@ if (process.env.NODE_ENV !== 'production') {
   });
   app.use(vite.middlewares);
 } else {
+  app.get('/api/health', (req, res) => {
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString()
+    });
+  });
+
   app.get('/', (req, res) => {
     res.json({
       status: 'API Running'
     });
   });
+
 }
+
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
