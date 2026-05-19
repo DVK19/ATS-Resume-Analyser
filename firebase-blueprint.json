@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "firebaseId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["firebaseId", "email"]
+    },
+    "Analysis": {
+      "title": "Analysis",
+      "description": "Resume analysis results",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "jobDescription": { "type": "string" },
+        "resumeText": { "type": "string" },
+        "atsScore": { "type": "number" },
+        "analysis": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/analyses/{analysisId}": {
+      "schema": "Analysis",
+      "description": "Stored resume analyses"
+    }
+  }
+}
