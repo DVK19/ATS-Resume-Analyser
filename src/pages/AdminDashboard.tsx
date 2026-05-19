@@ -24,8 +24,8 @@ export default function AdminDashboard() {
     try {
       const token = localStorage.getItem('token');
       const [statsRes, usersRes] = await Promise.all([
-        axios.get('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get('${import.meta.env.VITE_API_URL}/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get('${import.meta.env.VITE_API_URL}/api/admin/users', { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       setStats(statsRes.data);
       setUsers(usersRes.data);

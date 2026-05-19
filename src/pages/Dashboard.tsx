@@ -24,7 +24,7 @@ export default function Dashboard() {
   const fetchAnalyses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('/api/analyses', {
+      const res = await axios.get('${import.meta.env.VITE_API_URL}/api/analyses', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRecentAnalyses(res.data.slice(0, 5));
