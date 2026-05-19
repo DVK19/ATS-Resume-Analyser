@@ -26,7 +26,7 @@ export default function Results() {
   const fetchResults = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/analyses/${id}`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/analyses/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setData(res.data);

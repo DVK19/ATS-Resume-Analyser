@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/admin/users/${user._id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/users/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers((prev) => prev.filter((u) => u._id !== user._id));
