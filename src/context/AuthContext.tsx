@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setFirebaseUser(fUser);
       if (fUser) {
         try {
-          const res = await axios.post('${import.meta.env.VITE_API_URL}/api/auth/login', {
+          const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
             firebaseId: fUser.uid,
             email: fUser.email,
             displayName: fUser.displayName,

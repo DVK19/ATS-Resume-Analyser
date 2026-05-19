@@ -23,7 +23,7 @@ export default function History() {
   const fetchAnalyses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('${import.meta.env.VITE_API_URL}/api/analyses', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/analyses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAnalyses(res.data);

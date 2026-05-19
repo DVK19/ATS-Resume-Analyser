@@ -46,7 +46,7 @@ export default function Analysis() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('${import.meta.env.VITE_API_URL}/api/analyze', formData, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/analyze`, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}` 

@@ -91,11 +91,11 @@ const upload = multer({
 // --- API Routes ---
 
 // Auth
-app.get('${import.meta.env.VITE_API_URL}/api/health', (req, res) => {
+app.get(`${import.meta.env.VITE_API_URL}/api/health`, (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.post('${import.meta.env.VITE_API_URL}/api/auth/login', async (req, res) => {
+app.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, async (req, res) => {
   try {
     const { firebaseId, email, displayName, photoURL } = req.body;
     let user = await User.findOne({ firebaseId });
@@ -124,7 +124,7 @@ app.post('${import.meta.env.VITE_API_URL}/api/auth/login', async (req, res) => {
 });
 
 // Resume Analysis
-app.post('${import.meta.env.VITE_API_URL}/api/analyze', authenticateToken, upload.single('resume'), async (req: any, res: any) => {
+app.post(`${import.meta.env.VITE_API_URL}/api/analyze`, authenticateToken, upload.single('resume'), async (req: any, res: any) => {
   try {
     const { jobDescription } = req.body;
     if (!req.file) return res.status(400).json({ message: 'Resume PDF is required' });
@@ -291,7 +291,7 @@ app.post('${import.meta.env.VITE_API_URL}/api/analyze', authenticateToken, uploa
 });
 
 // Dashboard
-app.get('${import.meta.env.VITE_API_URL}/api/analyses', authenticateToken, async (req: any, res) => {
+app.get(`${import.meta.env.VITE_API_URL}/api/analyses`, authenticateToken, async (req: any, res) => {
   try {
     const analyses = await Analysis.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(analyses);
@@ -300,7 +300,7 @@ app.get('${import.meta.env.VITE_API_URL}/api/analyses', authenticateToken, async
   }
 });
 
-app.get('${import.meta.env.VITE_API_URL}/api/analyses/:id', authenticateToken, async (req: any, res: any) => {
+app.get(`${import.meta.env.VITE_API_URL}/api/analyses/:id`, authenticateToken, async (req: any, res: any) => {
   try {
     const analysis = await Analysis.findOne({ _id: req.params.id, userId: req.user.id });
     if (!analysis) return res.status(404).json({ message: 'Analysis not found' });
@@ -311,7 +311,7 @@ app.get('${import.meta.env.VITE_API_URL}/api/analyses/:id', authenticateToken, a
 });
 
 // Admin
-app.get('${import.meta.env.VITE_API_URL}/api/admin/stats', authenticateToken, isAdmin, async (req, res) => {
+app.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, authenticateToken, isAdmin, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const totalAnalyses = await Analysis.countDocuments();
@@ -329,7 +329,7 @@ app.get('${import.meta.env.VITE_API_URL}/api/admin/stats', authenticateToken, is
   }
 });
 
-app.get('${import.meta.env.VITE_API_URL}/api/admin/users', authenticateToken, isAdmin, async (req, res) => {
+app.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, authenticateToken, isAdmin, async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
@@ -338,7 +338,7 @@ app.get('${import.meta.env.VITE_API_URL}/api/admin/users', authenticateToken, is
   }
 });
 
-app.delete('${import.meta.env.VITE_API_URL}/api/admin/users/:id', authenticateToken, isAdmin, async (req: any, res) => {
+app.delete(`${import.meta.env.VITE_API_URL}/api/admin/users/:id`, authenticateToken, isAdmin, async (req: any, res) => {
   try {
     const userId = req.params.id;
 
@@ -373,14 +373,14 @@ if (process.env.NODE_ENV !== 'production') {
   });
   app.use(vite.middlewares);
 } else {
-  app.get('${import.meta.env.VITE_API_URL}/api/health', (req, res) => {
+  app.get(`${import.meta.env.VITE_API_URL}/api/health`, (req, res) => {
     res.json({
       status: 'ok',
       timestamp: new Date().toISOString()
     });
   });
 
-  app.get('${import.meta.env.VITE_API_URL}/', (req, res) => {
+  app.get(`${import.meta.env.VITE_API_URL}/`, (req, res) => {
     res.json({
       status: 'API Running'
     });
